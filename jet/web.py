@@ -9,7 +9,6 @@ import dotenv
 import gradio as gr
 from langchain.chat_models import AzureChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-
 from prompts import (
     CHAT_SYSTEM_MESSAGE,
     WRITING_CORRECT_SYSTEM_MESSAGE,
