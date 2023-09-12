@@ -1,17 +1,19 @@
-import re
-import os
-import logging
-import difflib
+# -*- coding: utf-8 -*-
 import datetime
+import difflib
+import logging
+import os
+import re
+
+import dotenv
 import gradio as gr
 from langchain.chat_models import AzureChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
-import dotenv
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from prompts import (
     CHAT_SYSTEM_MESSAGE,
-    WRITING_REFINE_SYSTEM_MESSAGE,
     WRITING_CORRECT_SYSTEM_MESSAGE,
+    WRITING_REFINE_SYSTEM_MESSAGE,
 )
 
 dotenv.load_dotenv()

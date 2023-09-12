@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 CHAT_SYSTEM_MESSAGE = """You are ChatGPT. Format your response in Markdown and inline math via $...$, math equations via $$...$$. \nCurrent Beijing Time: {time}"""
 
 
@@ -16,4 +17,3 @@ Example 1:
 User: hell world!
 Assistant: Hello world!
 """
-
