@@ -124,7 +124,7 @@ with gr.Blocks() as writing_tab:
         refine_btn = gr.Button(value="Refine")
 
     output = gr.Textbox(lines=4, label="Output", show_copy_button=True)
-    word_level = gr.Checkbox(label="Word Level Diff", default=True)
+    word_level = gr.Checkbox(label="Word Level Diff")
     with gr.Row():
         diff_input = gr.HighlightedText(
             label="Diff (input)",
