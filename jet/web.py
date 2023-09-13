@@ -74,7 +74,13 @@ def generate_new_messages(message, history, system_message=None):
 
 
 async def agenerate_new_text(
-    message, history, return_history=False, system_message=None
+    message,
+    history,
+    return_history=False,
+    system_message=None,
+    temperature=1.0,
+    top_p=1.0,
+    max_tokens=0,
 ):
     messages = make_langchain_history(
         gradio_history=history, message=message, system_message=system_message
@@ -102,6 +108,9 @@ async def agenerate_new_text(
         deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
         streaming=True,
         callbacks=[handler],
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=max_tokens if max_tokens > 0 else None,
     )
     task = asyncio.create_task(
         wrap_done(chat.agenerate(messages=[messages]), handler.done)
@@ -125,6 +134,34 @@ async def agenerate_new_text(
 """
 Chat
 """
+
+
+def model_parameters():
+    with gr.Accordion("Parameters", open=False):
+        temperature = gr.Slider(
+            minimum=0.0,
+            maximum=2.0,
+            value=1.0,
+            step=0.1,
+            label="Temperature",
+        )
+        top_p = gr.Slider(
+            minimum=0.0,
+            maximum=0.1,
+            value=1.0,
+            step=0.1,
+            label="top_p (nucleus sampling)",
+        )
+        max_tokens = gr.Slider(
+            minimum=0,
+            maximum=32_000,
+            value=0,
+            step=1,
+            label="Max Tokens (0 for inf)",
+        )
+    return temperature, top_p, max_tokens
+
+
 with gr.Blocks() as chat_tab:
     chatbot = gr.Chatbot(
         height=500,
@@ -140,24 +177,36 @@ with gr.Blocks() as chat_tab:
         # TODO: add retry and undo
         clear = gr.ClearButton([msg, chatbot])
 
-    system_message = gr.Textbox(
-        value=get_chat_system_message, lines=4, label="System Message"
-    )
+    with gr.Accordion("System Message", open=False):
+        system_message = gr.Textbox(
+            placeholder="You are ChatGPT.",
+            value=get_chat_system_message,
+            lines=4,
+            label="System Message",
+            show_label=False,
+        )
+    with gr.Column():
+        temperature, top_p, max_tokens = model_parameters()
 
     def user(user_message, history):
         return "", history + [[user_message, None]]
 
-    async def bot(history, system_message):
+    async def bot(
+        history, system_message: str, temperature: float, top_p: float, max_tokens: int
+    ):
         async for history in agenerate_new_text(
             message=None,
             history=history,
             return_history=True,
             system_message=system_message,
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
         ):
             yield history
 
     msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
-        bot, [chatbot, system_message], [chatbot]
+        bot, [chatbot, system_message, temperature, top_p, max_tokens], [chatbot]
     )
 
 """
