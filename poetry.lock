@@ -720,13 +720,13 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "gradio"
-version = "3.43.2"
+version = "3.44.0"
 description = "Python library for easily interacting with trained machine learning models"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "gradio-3.43.2-py3-none-any.whl", hash = "sha256:3b0f92a5eb604a0d79066e36c983aa9e50ba8d8bda0a1f5533b3389a3839a07b"},
-    {file = "gradio-3.43.2.tar.gz", hash = "sha256:f15fae8c418d7bd9f1a0b0d38e4b6f8354405123925ee6a6ae4bfade492c870b"},
+    {file = "gradio-3.44.0-py3-none-any.whl", hash = "sha256:cfb2807b52b542b276a215418bd7f4fec3719e85fb8544ffd9bccf21247f9126"},
+    {file = "gradio-3.44.0.tar.gz", hash = "sha256:88cc8f6bb59237d037c1ca23e3a7471f99b416d258259cf01985bf6ad741b215"},
 ]
 
 [package.dependencies]
@@ -1206,13 +1206,13 @@ text-helpers = ["chardet (>=5.1.0,<6.0.0)"]
 
 [[package]]
 name = "langsmith"
-version = "0.0.35"
+version = "0.0.36"
 description = "Client library to connect to the LangSmith LLM Tracing and Evaluation Platform."
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "langsmith-0.0.35-py3-none-any.whl", hash = "sha256:96b5cf69952a218d881a27817381fa67ebd283eba9c6814b72180530f9748348"},
-    {file = "langsmith-0.0.35.tar.gz", hash = "sha256:127fee806b475430b530bdf9bc397ea1c65ec144a23fa1b5bba2bba31d9d1e76"},
+    {file = "langsmith-0.0.36-py3-none-any.whl", hash = "sha256:34498d4ade9c60844617ff2882bc66f09dcb2be1ad684a67991f04c4c9929bed"},
+    {file = "langsmith-0.0.36.tar.gz", hash = "sha256:b44a7be8ecf107a5b4e8dcdbafe6cff92e4e0ff84526feac92e20e3d68928433"},
 ]
 
 [package.dependencies]
@@ -2283,13 +2283,13 @@ doc = ["Sphinx", "sphinx-rtd-theme"]
 
 [[package]]
 name = "setuptools"
-version = "68.2.1"
+version = "68.2.2"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-68.2.1-py3-none-any.whl", hash = "sha256:eff96148eb336377ab11beee0c73ed84f1709a40c0b870298b0d058828761bae"},
-    {file = "setuptools-68.2.1.tar.gz", hash = "sha256:56ee14884fd8d0cd015411f4a13f40b4356775a0aefd9ebc1d3bfb9a1acb32f1"},
+    {file = "setuptools-68.2.2-py3-none-any.whl", hash = "sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a"},
+    {file = "setuptools-68.2.2.tar.gz", hash = "sha256:4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87"},
 ]
 
 [package.extras]

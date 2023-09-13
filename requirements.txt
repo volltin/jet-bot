@@ -352,9 +352,9 @@ fsspec==2023.9.0 ; python_version >= "3.10" and python_version < "4.0" \
 gradio-client==0.5.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:709e91c1e0738abe46ad9f4565d490ef36b0f17ce347050017afaa469ed79a6a \
     --hash=sha256:8e07bddd4c21f76fd218897703df8012c7e95dc74e3660edde78ac89fe4cf284
-gradio==3.43.2 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:3b0f92a5eb604a0d79066e36c983aa9e50ba8d8bda0a1f5533b3389a3839a07b \
-    --hash=sha256:f15fae8c418d7bd9f1a0b0d38e4b6f8354405123925ee6a6ae4bfade492c870b
+gradio==3.44.0 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:88cc8f6bb59237d037c1ca23e3a7471f99b416d258259cf01985bf6ad741b215 \
+    --hash=sha256:cfb2807b52b542b276a215418bd7f4fec3719e85fb8544ffd9bccf21247f9126
 greenlet==2.0.2 ; python_version >= "3.10" and python_version < "4.0" and (platform_machine == "aarch64" or platform_machine == "ppc64le" or platform_machine == "x86_64" or platform_machine == "amd64" or platform_machine == "AMD64" or platform_machine == "win32" or platform_machine == "WIN32") \
     --hash=sha256:03a8f4f3430c3b3ff8d10a2a86028c660355ab637cee9333d63d66b56f09d52a \
     --hash=sha256:0bf60faf0bc2468089bdc5edd10555bab6e85152191df713e2ab1fcc86382b5a \
@@ -555,9 +555,9 @@ kiwisolver==1.4.5 ; python_version >= "3.10" and python_version < "4.0" \
 langchain==0.0.286 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:3a5dae7e8726ae755f3671105610911a7cf2d3e1fb4b0531b6e0b4336051ea2f \
     --hash=sha256:487caa0eb92abf8bab574429fbb064e76569510cc7225ab7a96ae8d40cc19585
-langsmith==0.0.35 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:127fee806b475430b530bdf9bc397ea1c65ec144a23fa1b5bba2bba31d9d1e76 \
-    --hash=sha256:96b5cf69952a218d881a27817381fa67ebd283eba9c6814b72180530f9748348
+langsmith==0.0.36 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:34498d4ade9c60844617ff2882bc66f09dcb2be1ad684a67991f04c4c9929bed \
+    --hash=sha256:b44a7be8ecf107a5b4e8dcdbafe6cff92e4e0ff84526feac92e20e3d68928433
 markupsafe==2.1.3 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:05fb21170423db021895e1ea1e1f3ab3adb85d1c2333cbc2310f2a26bc77272e \
     --hash=sha256:0a4e4a1aff6c7ac4cd55792abf96c915634c2b97e3cc1c7129578aa68ebd754e \
@@ -1241,9 +1241,9 @@ semantic-version==2.10.0 ; python_version >= "3.10" and python_version < "4.0" \
 setuptools-scm==7.1.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:6c508345a771aad7d56ebff0e70628bf2b0ec7573762be9960214730de278f27 \
     --hash=sha256:73988b6d848709e2af142aa48c986ea29592bbcfca5375678064708205253d8e
-setuptools==68.2.1 ; python_version >= "3.10" and python_version < "4.0" \
-    --hash=sha256:56ee14884fd8d0cd015411f4a13f40b4356775a0aefd9ebc1d3bfb9a1acb32f1 \
-    --hash=sha256:eff96148eb336377ab11beee0c73ed84f1709a40c0b870298b0d058828761bae
+setuptools==68.2.2 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87 \
+    --hash=sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a
 six==1.16.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254

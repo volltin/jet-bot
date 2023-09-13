@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import asyncio
 import datetime
 import difflib
 import logging
@@ -7,6 +8,7 @@ import re
 
 import dotenv
 import gradio as gr
+from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.chat_models import AzureChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from prompts import (
@@ -31,21 +33,36 @@ def get_chat_system_message():
     return CHAT_SYSTEM_MESSAGE.format(time=ts)
 
 
-def generate_new_messages(message, history, system_message=None):
+def make_langchain_history(gradio_history, message=None, system_message=None):
+    """
+    Make a history in the format of langchain from gradio history
+    """
     history_langchain_format = []
 
+    # append the system message
     if system_message:
         history_langchain_format.append(SystemMessage(content=system_message))
 
-    # construct history
-    for human, ai in history:
+    # append the history
+    # gradio_history: List[Tuple[Optional[str], Optional[str]]]
+    # e.g. [(None, 'human message'), ('ai message', None)]
+    for human, ai in gradio_history:
         if human:
             history_langchain_format.append(HumanMessage(content=human))
         if ai:
             history_langchain_format.append(AIMessage(content=ai))
 
     # append the current message
-    history_langchain_format.append(HumanMessage(content=message))
+    if message:
+        history_langchain_format.append(HumanMessage(content=message))
+
+    return history_langchain_format
+
+
+def generate_new_messages(message, history, system_message=None):
+    history_langchain_format = make_langchain_history(
+        gradio_history=history, message=message, system_message=system_message
+    )
 
     # log the actual history
     logging.info("History: %r", history_langchain_format)
@@ -56,8 +73,59 @@ def generate_new_messages(message, history, system_message=None):
     return new_messages
 
 
+async def agenerate_new_text(
+    message, history, return_history=False, system_message=None
+):
+    messages = make_langchain_history(
+        gradio_history=history, message=message, system_message=system_message
+    )
+
+    if return_history:
+        # append pending bot message
+        history[-1][1] = ""
+
+    # log the actual history
+    logging.info("Messages: %r", messages)
+
+    handler = AsyncIteratorCallbackHandler()
+
+    async def wrap_done(fn, event: asyncio.Event):
+        """Wrap an awaitable with a event to signal when it's done or an exception is raised."""
+        try:
+            await fn
+        except Exception as e:
+            logging.error("Exception: %r", e)
+        finally:
+            event.set()  # Signal the aiter to stop.
+
+    chat = AzureChatOpenAI(
+        deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
+        streaming=True,
+        callbacks=[handler],
+    )
+    task = asyncio.create_task(
+        wrap_done(chat.agenerate(messages=[messages]), handler.done)
+    )
+
+    content = ""
+    async for token in handler.aiter():
+        content += token
+        if return_history:
+            # only update the bot message in the last item
+            history[-1][1] += token
+            yield history
+        else:
+            yield content
+
+    await task
+    # logging the return value of chat.agenerate
+    logging.info("Return value of chat.agenerate: %r", task.result())
+
+
+"""
+Chat
+"""
 with gr.Blocks() as chat_tab:
-    heading = gr.Markdown(f"# Chat with {BOT_NAME} (HJY AI bot)")
     chatbot = gr.Chatbot(
         height=500,
         container=False,
@@ -68,27 +136,36 @@ with gr.Blocks() as chat_tab:
         ],
     )
     msg = gr.Textbox(label="Your Message")
-    clear = gr.ClearButton([msg, chatbot])
+    with gr.Row():
+        # TODO: add retry and undo
+        clear = gr.ClearButton([msg, chatbot])
+
     system_message = gr.Textbox(
         value=get_chat_system_message, lines=4, label="System Message"
     )
 
-    def respond(message, chat_history, system_message):
-        chat_history.append((message, None))
-        new_messages = generate_new_messages(
-            message, chat_history, system_message=system_message
-        )
-        for new_message in new_messages:
-            if isinstance(new_message, HumanMessage):
-                chat_history.append((new_message.content, None))
-            elif isinstance(new_message, AIMessage):
-                chat_history.append((None, new_message.content))
-            elif isinstance(new_message, SystemMessage):
-                chat_history.append((None, new_message.content))
-        return "", chat_history
+    def user(user_message, history):
+        return "", history + [[user_message, None]]
 
-    msg.submit(respond, [msg, chatbot, system_message], [msg, chatbot], queue=False)
+    async def bot(history, system_message):
+        async for history in agenerate_new_text(
+            message=None,
+            history=history,
+            return_history=True,
+            system_message=system_message,
+        ):
+            yield history
 
+    msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
+        bot, [chatbot, system_message], [chatbot]
+    )
+
+"""
+Chat (Gradio Version)
+"""
+chat_gr_tab = gr.ChatInterface(
+    agenerate_new_text,
+)
 
 with gr.Blocks() as writing_tab:
 
@@ -165,9 +242,9 @@ with gr.Blocks() as writing_tab:
     refine_btn.click(submit, [input, refine_system_message], [output], queue=False)
 
 demo = gr.TabbedInterface(
-    [chat_tab, writing_tab],
-    tab_names=["Chat", "Writing"],
+    [chat_tab, chat_gr_tab, writing_tab],
+    tab_names=["Chat", "Chat (gr)", "Writing"],
     css="footer {visibility: hidden}",
-    title=f"Chat with {BOT_NAME}",
+    title=f"Chat with {BOT_NAME} (HJY AI bot)",
 )
-demo.launch(share=False)
+demo.queue().launch(share=False)
