@@ -79,7 +79,6 @@ async def agenerate_new_text(
     return_history=False,
     system_message=None,
     temperature=1.0,
-    top_p=1.0,
     max_tokens=0,
 ):
     messages = make_langchain_history(
@@ -109,7 +108,6 @@ async def agenerate_new_text(
         streaming=True,
         callbacks=[handler],
         temperature=temperature,
-        top_p=top_p,
         max_tokens=max_tokens if max_tokens > 0 else None,
     )
     task = asyncio.create_task(
@@ -145,13 +143,6 @@ def model_parameters():
             step=0.1,
             label="Temperature",
         )
-        top_p = gr.Slider(
-            minimum=0.0,
-            maximum=0.1,
-            value=1.0,
-            step=0.1,
-            label="top_p (nucleus sampling)",
-        )
         max_tokens = gr.Slider(
             minimum=0,
             maximum=32_000,
@@ -159,7 +150,7 @@ def model_parameters():
             step=1,
             label="Max Tokens (0 for inf)",
         )
-    return temperature, top_p, max_tokens
+    return temperature, max_tokens
 
 
 with gr.Blocks() as chat_tab:
@@ -186,27 +177,24 @@ with gr.Blocks() as chat_tab:
             show_label=False,
         )
     with gr.Column():
-        temperature, top_p, max_tokens = model_parameters()
+        temperature, max_tokens = model_parameters()
 
     def user(user_message, history):
         return "", history + [[user_message, None]]
 
-    async def bot(
-        history, system_message: str, temperature: float, top_p: float, max_tokens: int
-    ):
+    async def bot(history, system_message: str, temperature: float, max_tokens: int):
         async for history in agenerate_new_text(
             message=None,
             history=history,
             return_history=True,
             system_message=system_message,
             temperature=temperature,
-            top_p=top_p,
             max_tokens=max_tokens,
         ):
             yield history
 
     msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
-        bot, [chatbot, system_message, temperature, top_p, max_tokens], [chatbot]
+        bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )
 
 """
