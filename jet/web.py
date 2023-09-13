@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ast
 import asyncio
 import datetime
 import difflib
@@ -168,6 +169,18 @@ with gr.Blocks() as chat_tab:
         # TODO: add retry and undo
         clear = gr.ClearButton([msg, chatbot])
 
+    with gr.Accordion("Inspect & Edit", open=False):
+        edit_index = gr.Textbox(
+            value="",
+            interactive=False,
+            label="Message Index",
+        )
+        edit_content = gr.Code(
+            language="markdown",
+            label="Message Content",
+        )
+        edit_done = gr.Button(value="Update")
+
     with gr.Accordion("System Message", open=False):
         system_message = gr.Textbox(
             placeholder="You are ChatGPT.",
@@ -193,9 +206,29 @@ with gr.Blocks() as chat_tab:
         ):
             yield history
 
+    def load_message_to_edit_area(event: gr.SelectData):
+        logging.info("Select Event: value: %r index: %r", event.value, event.index)
+        text = event.value
+        index = event.index  # [msg_id, user/ai]
+        return repr(index), text
+
+    def update_history(index, content, history):
+        # index maybe repr(index), to array
+        if type(index) == str:
+            index = ast.literal_eval(index)
+
+        # update the history
+        history[index[0]][index[1]] = content
+
+        return history
+
     msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
         bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )
+    chatbot.select(
+        load_message_to_edit_area, inputs=[], outputs=[edit_index, edit_content]
+    )
+    edit_done.click(update_history, [edit_index, edit_content, chatbot], [chatbot])
 
 """
 Chat (Gradio Version)
