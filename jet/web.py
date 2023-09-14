@@ -180,7 +180,7 @@ with gr.Blocks() as chat_tab:
             {"left": "$", "right": "$", "display": False},
         ],
     )
-    msg = gr.Textbox(label="Your Message")
+    msg = gr.Textbox(label="Your Message", autofocus=True, lines=2, placeholder="Hi!")
     with gr.Row():
         # TODO: add retry and undo
         clear = gr.ClearButton([msg, chatbot])
