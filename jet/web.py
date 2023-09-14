@@ -163,6 +163,7 @@ with gr.Blocks() as chat_tab:
             visible=False,
         )
         edit_content = gr.Code(
+            lines=2,
             language="markdown",
             label="Message Content",
         )
