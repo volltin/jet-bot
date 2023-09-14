@@ -254,6 +254,7 @@ with gr.Blocks() as chat_tab:
 """
 Chat (Gradio Version)
 """
+
 chat_gr_tab = gr.ChatInterface(
     agenerate_new_text,
 )
@@ -338,4 +339,6 @@ demo = gr.TabbedInterface(
     css="footer {visibility: hidden}",
     title=f"Chat with {BOT_NAME} (HJY AI bot)",
 )
-demo.queue().launch(share=False)
+
+if __name__ == "__main__":
+    demo.queue().launch(share=False)
