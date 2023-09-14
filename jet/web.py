@@ -155,6 +155,21 @@ def model_parameters():
 
 
 with gr.Blocks() as chat_tab:
+    with gr.Accordion("Inspect & Edit", open=True, visible=False) as edit_accordion:
+        edit_index = gr.Textbox(
+            value="",
+            interactive=False,
+            label="Message Index",
+            visible=False,
+        )
+        edit_content = gr.Code(
+            language="markdown",
+            label="Message Content",
+        )
+        with gr.Row():
+            edit_done = gr.Button(value="Update", variant="primary", size="sm")
+            edit_discard = gr.Button(value="Discard", variant="stop", size="sm")
+
     chatbot = gr.Chatbot(
         height=500,
         container=False,
@@ -168,18 +183,6 @@ with gr.Blocks() as chat_tab:
     with gr.Row():
         # TODO: add retry and undo
         clear = gr.ClearButton([msg, chatbot])
-
-    with gr.Accordion("Inspect & Edit", open=False):
-        edit_index = gr.Textbox(
-            value="",
-            interactive=False,
-            label="Message Index",
-        )
-        edit_content = gr.Code(
-            language="markdown",
-            label="Message Content",
-        )
-        edit_done = gr.Button(value="Update")
 
     with gr.Accordion("System Message", open=False):
         system_message = gr.Textbox(
@@ -210,7 +213,10 @@ with gr.Blocks() as chat_tab:
         logging.info("Select Event: value: %r index: %r", event.value, event.index)
         text = event.value
         index = event.index  # [msg_id, user/ai]
-        return repr(index), text
+
+        # update layout
+        edit_accordion_update = gr.update(visible=True)
+        return repr(index), text, edit_accordion_update
 
     def update_history(index, content, history):
         # index maybe repr(index), to array
@@ -220,15 +226,29 @@ with gr.Blocks() as chat_tab:
         # update the history
         history[index[0]][index[1]] = content
 
-        return history
+        # update the layout
+        edit_accordion_update = gr.update(visible=False)
+
+        return history, edit_accordion_update
+
+    def discard_update_history():
+        # update the layout
+        edit_accordion_update = gr.update(visible=False)
+
+        return edit_accordion_update
 
     msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
         bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )
     chatbot.select(
-        load_message_to_edit_area, inputs=[], outputs=[edit_index, edit_content]
+        load_message_to_edit_area,
+        inputs=[],
+        outputs=[edit_index, edit_content, edit_accordion],
     )
-    edit_done.click(update_history, [edit_index, edit_content, chatbot], [chatbot])
+    edit_done.click(
+        update_history, [edit_index, edit_content, chatbot], [chatbot, edit_accordion]
+    )
+    edit_discard.click(discard_update_history, [], [edit_accordion])
 
 """
 Chat (Gradio Version)
