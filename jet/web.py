@@ -1,19 +1,14 @@
 import logging
+import sys
+from pathlib import Path
 
 import dotenv
 import gradio as gr
 from tabs import chat_tab, writing_tab
 
+sys.path.append(str(Path(__file__).parent))
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
-
-import sys
-
-# this file as project root
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).parent))
-
 
 BOT_NAME = "Jet"
 demo = gr.TabbedInterface(
