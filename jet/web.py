@@ -296,12 +296,14 @@ with gr.Blocks() as writing_tab:
     word_level = gr.Checkbox(label="Word Level Diff")
     with gr.Row():
         diff_input = gr.HighlightedText(
+            value="",  # workaround for https://github.com/gradio-app/gradio/issues/5584
             label="Diff (input)",
             combine_adjacent=True,
             show_legend=True,
             color_map={"+": "green", "-": "red"},
         )
         diff_output = gr.HighlightedText(
+            value="",  # workaround for https://github.com/gradio-app/gradio/issues/5584
             label="Diff (output)",
             combine_adjacent=True,
             show_legend=True,
