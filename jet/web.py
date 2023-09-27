@@ -16,6 +16,7 @@ demo = gr.TabbedInterface(
     tab_names=["Chat", "Writing"],
     css="footer {visibility: hidden}",
     title=f"Chat with {BOT_NAME} (HJY AI bot)",
+    theme=gr.themes.Soft(),
 )
 
 if __name__ == "__main__":

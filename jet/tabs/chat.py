@@ -56,9 +56,14 @@ with gr.Blocks() as chat_tab:
         ],
     )
     msg = gr.Textbox(label="Your Message", autofocus=True, lines=2, placeholder="Hi!")
+
+    submit_btn = gr.Button(value="Submit", variant="primary")
     with gr.Row():
-        # TODO: add retry and undo
-        clear = gr.ClearButton([msg, chatbot])
+        retry_btn = gr.Button(value="Retry", variant="stop", size="sm")
+        undo_btn = gr.Button(value="Undo", variant="stop", size="sm")
+        clear_btn = gr.ClearButton(
+            components=[msg, chatbot], value="Clear", variant="stop", size="sm"
+        )
 
     with gr.Accordion("System Message", open=False):
         system_message = gr.Textbox(
@@ -113,9 +118,40 @@ with gr.Blocks() as chat_tab:
 
         return edit_accordion_update
 
+    async def retry(history, system_message, temperature, max_tokens):
+        if history:
+            history[-1][1] = None
+            yield history
+            async for history in agenerate_new_text(
+                message=None,
+                history=history,
+                return_history=True,
+                system_message=system_message,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            ):
+                yield history
+        else:
+            yield history
+
+    def undo(history):
+        last_human_message = None
+        if history:
+            last_human_message = history[-1][0]
+            history = history[:-1]
+        return history, last_human_message
+
     msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
         bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )
+    submit_btn.click(user, [msg, chatbot], [msg, chatbot]).then(
+        bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
+    )
+    retry_btn.click(
+        retry, [chatbot, system_message, temperature, max_tokens], [chatbot]
+    )
+    undo_btn.click(undo, [chatbot], [chatbot, msg])
+
     chatbot.select(
         load_message_to_edit_area,
         inputs=[],
