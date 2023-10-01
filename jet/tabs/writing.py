@@ -1,10 +1,10 @@
+import re
 import difflib
 import logging
-import re
 
 import dotenv
 import gradio as gr
-from prompts import WRITING_CORRECT_SYSTEM_MESSAGE, WRITING_REFINE_SYSTEM_MESSAGE
+from prompts import WRITING_REFINE_SYSTEM_MESSAGE, WRITING_CORRECT_SYSTEM_MESSAGE
 from utils.chat_utils import generate_new_messages
 
 dotenv.load_dotenv()
