@@ -2,6 +2,7 @@ import logging
 import sys
 from pathlib import Path
 
+import click
 import dotenv
 import gradio as gr
 from tabs import chat_tab, writing_tab
@@ -19,5 +20,16 @@ demo = gr.TabbedInterface(
     theme=gr.themes.Soft(),
 )
 
+
+@click.command()
+@click.option(
+    "--share/--no-share",
+    default=False,
+    help="Share on Gradio's public domain. Share links expire after 72 hours.",
+)
+def main(share):
+    demo.queue().launch(share=share)
+
+
 if __name__ == "__main__":
-    demo.queue().launch(share=False)
+    main()
