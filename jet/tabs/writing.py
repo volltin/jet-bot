@@ -44,7 +44,7 @@ with gr.Blocks() as writing_tab:
         refine_btn = gr.Button(value="Refine")
 
     output = gr.Textbox(lines=4, label="Output", show_copy_button=True)
-    word_level = gr.Checkbox(label="Word Level Diff")
+    word_level = gr.Checkbox(label="Word Level Diff", value=True)
     with gr.Row():
         diff_input = gr.HighlightedText(
             value="",  # workaround for https://github.com/gradio-app/gradio/issues/5584
