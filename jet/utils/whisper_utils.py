@@ -37,7 +37,9 @@ def transcribe_wav_file(wav_file, prompt):
 
 def transcribe_audio_data(sr, data, prompt=None):
     with tempfile.NamedTemporaryFile(suffix=".wav") as file:
-        with warnings.catch_warnings():  # ignore warnings of converting int32 to int16
+        with warnings.catch_warnings():
+            # ignore warnings of converting int32 to int16
+            warnings.simplefilter("ignore")
             audio_to_file(sr, data, file.name, format="wav")
         with open(file.name, "rb") as f:
             transcript = transcribe_wav_file(f, prompt)

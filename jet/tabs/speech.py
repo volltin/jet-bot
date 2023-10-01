@@ -2,8 +2,6 @@ import gradio as gr
 from utils.whisper_utils import transcribe_audio_data
 
 with gr.Blocks() as speech_tab:
-    # ASR
-
     with gr.Row():
         with gr.Column():
             audio_source = gr.Dropdown(
