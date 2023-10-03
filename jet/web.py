@@ -28,7 +28,7 @@ demo = gr.TabbedInterface(
     help="Share on Gradio's public domain. Share links expire after 72 hours.",
 )
 def main(share):
-    demo.queue().launch(share=share)
+    demo.queue(concurrency_count=4).launch(share=share, auth=[("test", "test")])
 
 
 if __name__ == "__main__":

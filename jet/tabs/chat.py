@@ -8,23 +8,30 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 from utils.chat_utils import agenerate_new_text, get_chat_system_message
+from utils.persist_utils import persist
 
 
 def model_parameters():
     with gr.Accordion("Parameters", open=False):
-        temperature = gr.Slider(
-            minimum=0.0,
-            maximum=2.0,
-            value=1.0,
-            step=0.1,
-            label="Temperature",
+        temperature = persist(
+            gr.Slider(
+                minimum=0.0,
+                maximum=2.0,
+                value=1.0,
+                step=0.1,
+                label="Temperature",
+                elem_id="chat-temperature",
+            )
         )
-        max_tokens = gr.Slider(
-            minimum=0,
-            maximum=32_000,
-            value=0,
-            step=1,
-            label="Max Tokens (0 for inf)",
+        max_tokens = persist(
+            gr.Slider(
+                minimum=0,
+                maximum=32_000,
+                value=0,
+                step=1,
+                label="Max Tokens (0 for inf)",
+                elem_id="chat-max-tokens",
+            )
         )
     return temperature, max_tokens
 
@@ -46,16 +53,27 @@ with gr.Blocks() as chat_tab:
             edit_done = gr.Button(value="Update", variant="primary", size="sm")
             edit_discard = gr.Button(value="Discard", variant="stop", size="sm")
 
-    chatbot = gr.Chatbot(
-        height=500,
-        container=False,
-        bubble_full_width=False,
-        latex_delimiters=[
-            {"left": "$$", "right": "$$", "display": True},
-            {"left": "$", "right": "$", "display": False},
-        ],
+    chatbot = persist(
+        gr.Chatbot(
+            height=500,
+            container=False,
+            bubble_full_width=False,
+            latex_delimiters=[
+                {"left": "$$", "right": "$$", "display": True},
+                {"left": "$", "right": "$", "display": False},
+            ],
+            elem_id="chat-chatbot",
+        )
     )
-    msg = gr.Textbox(label="Your Message", autofocus=True, lines=2, placeholder="Hi!")
+    msg = persist(
+        gr.Textbox(
+            label="Your Message",
+            autofocus=True,
+            lines=2,
+            placeholder="Hi!",
+            elem_id="chat-msg",
+        )
+    )
 
     submit_btn = gr.Button(value="Submit", variant="primary")
     with gr.Row():
@@ -66,12 +84,20 @@ with gr.Blocks() as chat_tab:
         )
 
     with gr.Accordion("System Message", open=False):
-        system_message = gr.Textbox(
-            placeholder="You are ChatGPT.",
-            value=get_chat_system_message,
-            lines=4,
-            label="System Message",
-            show_label=False,
+        system_message = persist(
+            gr.Textbox(
+                value=get_chat_system_message,
+                placeholder="You are ChatGPT.",
+                lines=4,
+                label="System Message",
+                show_label=False,
+                elem_id="chat-system-message",
+            )
+        )
+        system_message_reset_btn = gr.Button(
+            value="Reset",
+            variant="secondary",
+            size="sm",
         )
     with gr.Column():
         temperature, max_tokens = model_parameters()
@@ -161,3 +187,5 @@ with gr.Blocks() as chat_tab:
         update_history, [edit_index, edit_content, chatbot], [chatbot, edit_accordion]
     )
     edit_discard.click(discard_update_history, [], [edit_accordion])
+
+    system_message_reset_btn.click(get_chat_system_message, [], [system_message])
