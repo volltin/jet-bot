@@ -38,7 +38,7 @@ with gr.Blocks() as speech_tab:
 
     def update_audio_input_source(audio_source):
         assert audio_source in ["microphone", "upload"]
-        return gr.Audio.update(source=audio_source)
+        return gr.Audio(source=audio_source)
 
     def submit_audio(audio, whisper_prompt):
         sr, data = audio

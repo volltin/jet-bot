@@ -96,7 +96,7 @@ with gr.Blocks() as chat_tab:
         index = event.index  # [msg_id, user/ai]
 
         # update layout
-        edit_accordion_update = gr.update(visible=True)
+        edit_accordion_update = gr.Accordion(visible=True)
         return repr(index), text, edit_accordion_update
 
     def update_history(index, content, history):
@@ -108,13 +108,13 @@ with gr.Blocks() as chat_tab:
         history[index[0]][index[1]] = content
 
         # update the layout
-        edit_accordion_update = gr.update(visible=False)
+        edit_accordion_update = gr.Accordion(visible=False)
 
         return history, edit_accordion_update
 
     def discard_update_history():
         # update the layout
-        edit_accordion_update = gr.update(visible=False)
+        edit_accordion_update = gr.Accordion(visible=False)
 
         return edit_accordion_update
 
