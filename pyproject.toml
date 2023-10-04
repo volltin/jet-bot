@@ -12,6 +12,7 @@ langchain = "^0.0.308"
 python-dotenv = "^1.0.0"
 gradio = "^3.46.1"
 click = "^8.1.7"
+sqlitedict = "^2.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

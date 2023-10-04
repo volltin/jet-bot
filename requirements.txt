@@ -1291,6 +1291,8 @@ sqlalchemy==2.0.21 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:f9fefd6298433b6e9188252f3bff53b9ff0443c8fde27298b8a2b19f6617eeb9 \
     --hash=sha256:fb87f763b5d04a82ae84ccff25554ffd903baafba6698e18ebaf32561f2fe4aa \
     --hash=sha256:fc6b15465fabccc94bf7e38777d665b6a4f95efd1725049d6184b3a39fd54880
+sqlitedict==2.1.0 ; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:03d9cfb96d602996f1d4c2db2856f1224b96a9c431bdd16e78032a72940f9e8c
 starlette==0.27.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:6a6b0d042acb8d469a01eba54e9cda6cbd24ac602c4cd016723117d6a7e73b75 \
     --hash=sha256:918416370e846586541235ccd38a474c08b80443ed31c578a418e2209b3eef91
