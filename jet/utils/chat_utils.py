@@ -7,22 +7,30 @@ import dotenv
 from prompts import CHAT_SYSTEM_MESSAGE
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.callbacks import AsyncIteratorCallbackHandler
-from langchain.chat_models import AzureChatOpenAI
+from langchain.chat_models import ChatOpenAI, AzureChatOpenAI
 
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 
 def get_chat(**kwargs):
-    if "deployment_name" not in kwargs:
-        kwargs["deployment_name"] = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+    openai_api_type = os.environ.get("OPENAI_API_TYPE", "openai")
+
     if "max_tokens" in kwargs:
         max_tokens = kwargs["max_tokens"]
         max_tokens = max_tokens if max_tokens > 0 else None
         kwargs["max_tokens"] = max_tokens
 
-    chat = AzureChatOpenAI(**kwargs)
-    return chat
+    if openai_api_type == "azure":
+        if "deployment_name" not in kwargs:
+            kwargs["deployment_name"] = os.getenv("OPENAI_MODEL_NAME")
+        chat = AzureChatOpenAI(**kwargs)
+        return chat
+    else:
+        if "model" not in kwargs:
+            kwargs["model"] = os.getenv("OPENAI_MODEL_NAME")
+        chat = ChatOpenAI(**kwargs)
+        return chat
 
 
 def get_chat_system_message():
