@@ -33,7 +33,14 @@ def model_parameters():
                 elem_id="chat-max-tokens",
             )
         )
-    return temperature, max_tokens
+        model_parameters_reset = gr.Button(
+            value="Reset",
+            variant="secondary",
+            size="sm",
+        )
+
+        model_parameters_reset.click(lambda: [1.0, 0], [], [temperature, max_tokens])
+    return temperature, max_tokens, model_parameters_reset
 
 
 with gr.Blocks() as chat_tab:
@@ -101,7 +108,7 @@ with gr.Blocks() as chat_tab:
             size="sm",
         )
     with gr.Column():
-        temperature, max_tokens = model_parameters()
+        temperature, max_tokens, model_parameters_reset = model_parameters()
 
     def user(user_message, history):
         return "", history + [[user_message, None]]
