@@ -63,7 +63,8 @@ with gr.Blocks() as chat_tab:
                 {"left": "$", "right": "$", "display": False},
             ],
             elem_id="chat-chatbot",
-        )
+        ),
+        mode="manual",
     )
     msg = persist(
         gr.Textbox(
@@ -167,12 +168,19 @@ with gr.Blocks() as chat_tab:
             history = history[:-1]
         return history, last_human_message
 
-    msg.submit(user, [msg, chatbot], [msg, chatbot]).then(
-        bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
+    gr.on(
+        [msg.submit, submit_btn.click],
+        user,
+        inputs=[msg, chatbot],
+        outputs=[msg, chatbot],
+    ).then(
+        bot,
+        inputs=[chatbot, system_message, temperature, max_tokens],
+        outputs=[chatbot],
+    ).then(
+        **chatbot.save_session_kwargs
     )
-    submit_btn.click(user, [msg, chatbot], [msg, chatbot]).then(
-        bot, [chatbot, system_message, temperature, max_tokens], [chatbot]
-    )
+
     retry_btn.click(
         retry, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )

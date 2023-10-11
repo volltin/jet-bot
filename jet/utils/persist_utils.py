@@ -1,4 +1,5 @@
 import logging
+from typing import Literal
 
 import gradio as gr
 from utils.db_utils import read_user_state, update_user_state
@@ -6,7 +7,11 @@ from utils.db_utils import read_user_state, update_user_state
 _REGISTERED_COMPONENTS = {}
 
 
-def make_component_persist(root_block: gr.Blocks, component: gr.components.Component):
+def make_component_persist(
+    root_block: gr.Blocks,
+    component: gr.components.Component,
+    mode,
+):
     """
     NOTE: please call this function before exiting **any** `with` blocks of `gradio.Blocks()`
     """
@@ -67,14 +72,26 @@ def make_component_persist(root_block: gr.Blocks, component: gr.components.Compo
     if not replace_load_fn:
         root_block.load(load_session, inputs=[], outputs=[component], queue=False)
 
-    component.change(save_session, inputs=[component], outputs=[], queue=True)
+    if mode == "change":
+        component.change(save_session, inputs=[component], outputs=[], queue=False)
+    elif mode == "input":
+        component.input(save_session, inputs=[component], outputs=[], queue=False)
+    elif mode == "manual":
+        # workaround for https://github.com/gradio-app/gradio/issues/5800
+        component.save_session_kwargs = {
+            "fn": save_session,
+            "inputs": [component],
+            "outputs": [],
+        }
+    else:
+        raise ValueError(f"unknown mode {mode}")
 
     return component
 
 
-def persist(comp):
+def persist(comp, mode: Literal["change", "input", "manual"] = "change"):
     """
     NOTE: please call this function before exiting **any** `with` blocks of `gradio.Blocks()`
     """
     root_block = gr.context.Context.root_block
-    return make_component_persist(root_block, comp)
+    return make_component_persist(root_block, comp, mode)
