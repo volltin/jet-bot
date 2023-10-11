@@ -72,6 +72,8 @@ with gr.Blocks() as chat_tab:
             elem_id="chat-chatbot",
         ),
         mode="manual",
+        # workaround for https://github.com/gradio-app/gradio/issues/5800
+        # TODO: use `mode="change"` after the issue is fixed
     )
     msg = persist(
         gr.Textbox(
