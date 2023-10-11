@@ -58,7 +58,7 @@ with gr.Blocks() as chat_tab:
         )
         with gr.Row():
             edit_done = gr.Button(value="Update", variant="primary", size="sm")
-            edit_discard = gr.Button(value="Discard", variant="stop", size="sm")
+            edit_discard = gr.Button(value="Discard", variant="secondary", size="sm")
 
     chatbot = persist(
         gr.Chatbot(
@@ -85,11 +85,9 @@ with gr.Blocks() as chat_tab:
 
     submit_btn = gr.Button(value="Submit", variant="primary")
     with gr.Row():
-        retry_btn = gr.Button(value="Retry", variant="stop", size="sm")
-        undo_btn = gr.Button(value="Undo", variant="stop", size="sm")
-        clear_btn = gr.ClearButton(
-            components=[msg, chatbot], value="Clear", variant="stop", size="sm"
-        )
+        retry_btn = gr.Button(value="Retry", variant="secondary", size="sm")
+        undo_btn = gr.Button(value="Undo", variant="secondary", size="sm")
+        clear_btn = gr.Button(value="Clear", variant="secondary", size="sm")
 
     with gr.Accordion("System Message", open=False):
         system_message = persist(
@@ -175,6 +173,13 @@ with gr.Blocks() as chat_tab:
             history = history[:-1]
         return history, last_human_message
 
+    def clear():
+        return (
+            [],  # history
+            "",  # message
+            get_chat_system_message(),  # system_message
+        )
+
     gr.on(
         [msg.submit, submit_btn.click],
         user,
@@ -192,6 +197,7 @@ with gr.Blocks() as chat_tab:
         retry, [chatbot, system_message, temperature, max_tokens], [chatbot]
     )
     undo_btn.click(undo, [chatbot], [chatbot, msg])
+    clear_btn.click(clear, [], [chatbot, msg, system_message])
 
     chatbot.select(
         load_message_to_edit_area,
