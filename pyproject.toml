@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 openai = "^0.28.1"
-langchain = "^0.0.308"
+langchain = "^0.0.312"
 python-dotenv = "^1.0.0"
 gradio = "^3.46.1"
 click = "^8.1.7"
