@@ -42,7 +42,7 @@ def main(bot_name, num_chat_tabs, auth_username, auth_password, share):
     chat_tabs = [
         tabs.create_chat_tab(tab_id=f"chattab{i+1}") for i in range(num_chat_tabs)
     ]
-    chat_tab_names = [f"Chat {i+1}" for i in range(5)]
+    chat_tab_names = [f"Chat {i+1}" for i in range(num_chat_tabs)]
     writing_tab = tabs.create_writing_tab(tab_id="writingtab")
     speech_tab = tabs.create_speech_tab(tab_id="speechtab")
     demo = gr.TabbedInterface(
