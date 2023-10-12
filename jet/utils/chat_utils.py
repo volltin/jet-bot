@@ -13,6 +13,10 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 
+def get_current_model():
+    return os.getenv("OPENAI_MODEL_NAME", "unknown")
+
+
 def get_chat(**kwargs):
     openai_api_type = os.environ.get("OPENAI_API_TYPE", "openai")
 
@@ -23,12 +27,12 @@ def get_chat(**kwargs):
 
     if openai_api_type == "azure":
         if "deployment_name" not in kwargs:
-            kwargs["deployment_name"] = os.getenv("OPENAI_MODEL_NAME")
+            kwargs["deployment_name"] = get_current_model()
         chat = AzureChatOpenAI(**kwargs)
         return chat
     else:
         if "model" not in kwargs:
-            kwargs["model"] = os.getenv("OPENAI_MODEL_NAME")
+            kwargs["model"] = get_current_model()
         chat = ChatOpenAI(**kwargs)
         return chat
 
