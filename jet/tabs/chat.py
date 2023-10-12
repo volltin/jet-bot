@@ -213,7 +213,9 @@ def create_chat_tab(tab_id=""):
             retry, [chatbot, system_message, temperature, max_tokens], [chatbot]
         )
         undo_btn.click(undo, [chatbot], [chatbot, msg])
-        clear_btn.click(clear, [], [chatbot, msg, system_message])
+        clear_btn.click(clear, [], [chatbot, msg, system_message]).then(
+            **chatbot.save_session_kwargs
+        )
 
         chatbot.select(
             load_message_to_edit_area,
