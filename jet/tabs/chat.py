@@ -19,6 +19,7 @@ from utils.persist_utils import persist
 def create_chat_tab(tab_id=""):
     def model_parameters():
         with gr.Accordion("Parameters", open=False):
+            model_status = gr.HTML()
             model_name = persist(
                 gr.Dropdown(
                     value=get_current_model(),
@@ -58,7 +59,31 @@ def create_chat_tab(tab_id=""):
                 [],
                 [model_name, temperature, max_tokens],
             )
-        return model_name, temperature, max_tokens, model_parameters_reset
+
+            def update_model_status(model_name, temperature, max_tokens):
+                if max_tokens == 0:
+                    max_tokens = "inf"
+
+                model_status_update = f"""
+                <small>
+                <b>Current Model:</b> {model_name}
+                <b>Temperature:</b> {temperature}
+                <b>Max Tokens:</b> {max_tokens}
+                </small>
+                """
+                return model_status_update
+
+            gr.on(
+                [
+                    model_name.change,
+                    temperature.change,
+                    max_tokens.change,
+                ],
+                update_model_status,
+                [model_name, temperature, max_tokens],
+                [model_status],
+            )
+        return model_status, model_name, temperature, max_tokens, model_parameters_reset
 
     with gr.Blocks() as chat_tab:
         with gr.Accordion("Inspect & Edit", open=True, visible=False) as edit_accordion:
@@ -79,6 +104,7 @@ def create_chat_tab(tab_id=""):
                     value="Discard", variant="secondary", size="sm"
                 )
 
+        chatbot_status = gr.HTML()
         chatbot = persist(
             gr.Chatbot(
                 height=500,
@@ -128,6 +154,7 @@ def create_chat_tab(tab_id=""):
             )
         with gr.Column():
             (
+                model_status,
                 model_name,
                 temperature,
                 max_tokens,
@@ -250,5 +277,7 @@ def create_chat_tab(tab_id=""):
         edit_discard.click(discard_update_history, [], [edit_accordion])
 
         system_message_reset_btn.click(get_chat_system_message, [], [system_message])
+
+        model_status.change(lambda x: x, [model_status], [chatbot_status])
 
     return chat_tab
