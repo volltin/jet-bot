@@ -8,6 +8,7 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 from utils.chat_utils import (
+    get_all_models,
     get_current_model,
     agenerate_new_text,
     get_chat_system_message,
@@ -18,9 +19,13 @@ from utils.persist_utils import persist
 def create_chat_tab(tab_id=""):
     def model_parameters():
         with gr.Accordion("Parameters", open=False):
-            current_model = gr.Textbox(
-                value=get_current_model,
-                label="Current Model (Cannot be changed)",
+            model_name = persist(
+                gr.Dropdown(
+                    value=get_current_model(),
+                    choices=get_all_models(),
+                    label="Current Model",
+                    elem_id=tab_id + "chat-model-name",
+                )
             )
             temperature = persist(
                 gr.Slider(
@@ -49,9 +54,11 @@ def create_chat_tab(tab_id=""):
             )
 
             model_parameters_reset.click(
-                lambda: [1.0, 0], [], [temperature, max_tokens]
+                lambda: [get_current_model(), 1.0, 0],
+                [],
+                [model_name, temperature, max_tokens],
             )
-        return temperature, max_tokens, model_parameters_reset
+        return model_name, temperature, max_tokens, model_parameters_reset
 
     with gr.Blocks() as chat_tab:
         with gr.Accordion("Inspect & Edit", open=True, visible=False) as edit_accordion:
@@ -120,18 +127,28 @@ def create_chat_tab(tab_id=""):
                 size="sm",
             )
         with gr.Column():
-            temperature, max_tokens, model_parameters_reset = model_parameters()
+            (
+                model_name,
+                temperature,
+                max_tokens,
+                model_parameters_reset,
+            ) = model_parameters()
 
         def user(user_message, history):
             return "", history + [[user_message, None]]
 
         async def bot(
-            history, system_message: str, temperature: float, max_tokens: int
+            history,
+            system_message: str,
+            model_name: str,
+            temperature: float,
+            max_tokens: int,
         ):
             async for history in agenerate_new_text(
                 message=None,
                 history=history,
                 return_history=True,
+                model_name=model_name,
                 system_message=system_message,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -166,7 +183,7 @@ def create_chat_tab(tab_id=""):
 
             return edit_accordion_update
 
-        async def retry(history, system_message, temperature, max_tokens):
+        async def retry(history, system_message, model_name, temperature, max_tokens):
             if history:
                 history[-1][1] = None
                 yield history
@@ -175,6 +192,7 @@ def create_chat_tab(tab_id=""):
                     history=history,
                     return_history=True,
                     system_message=system_message,
+                    model_name=model_name,
                     temperature=temperature,
                     max_tokens=max_tokens,
                 ):
@@ -203,14 +221,16 @@ def create_chat_tab(tab_id=""):
             outputs=[msg, chatbot],
         ).then(
             bot,
-            inputs=[chatbot, system_message, temperature, max_tokens],
+            inputs=[chatbot, system_message, model_name, temperature, max_tokens],
             outputs=[chatbot],
         ).then(
             **chatbot.save_session_kwargs
         )
 
         retry_btn.click(
-            retry, [chatbot, system_message, temperature, max_tokens], [chatbot]
+            retry,
+            [chatbot, system_message, model_name, temperature, max_tokens],
+            [chatbot],
         )
         undo_btn.click(undo, [chatbot], [chatbot, msg])
         clear_btn.click(clear, [], [chatbot, msg, system_message]).then(

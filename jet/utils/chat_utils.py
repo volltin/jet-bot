@@ -13,8 +13,15 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 
-def get_current_model():
+def get_current_model(model_name=None):
+    if model_name:
+        return model_name
     return os.getenv("OPENAI_MODEL_NAME", "unknown")
+
+
+def get_all_models():
+    openai_allowed_models = os.getenv("OPENAI_ALLOWED_MODELS", "")
+    return list(set(openai_allowed_models.split(",") + [get_current_model()]))
 
 
 def get_chat(**kwargs):
@@ -25,14 +32,18 @@ def get_chat(**kwargs):
         max_tokens = max_tokens if max_tokens > 0 else None
         kwargs["max_tokens"] = max_tokens
 
+    model_name = None
+    if "model_name" in kwargs:
+        model_name = kwargs["model_name"]
+
     if openai_api_type == "azure":
         if "deployment_name" not in kwargs:
-            kwargs["deployment_name"] = get_current_model()
+            kwargs["deployment_name"] = get_current_model(model_name)
         chat = AzureChatOpenAI(**kwargs)
         return chat
     else:
         if "model" not in kwargs:
-            kwargs["model"] = get_current_model()
+            kwargs["model"] = get_current_model(model_name)
         chat = ChatOpenAI(**kwargs)
         return chat
 
@@ -92,6 +103,7 @@ async def agenerate_new_text(
     message,
     history,
     return_history=False,
+    model_name=None,
     system_message=None,
     temperature=1.0,
     max_tokens=0,
@@ -121,6 +133,7 @@ async def agenerate_new_text(
     chat = get_chat(
         streaming=True,
         callbacks=[handler],
+        model_name=model_name,
         temperature=temperature,
         max_tokens=max_tokens,
     )
