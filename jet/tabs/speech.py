@@ -6,12 +6,9 @@ def create_speech_tab(tab_id=""):
     with gr.Blocks() as speech_tab:
         with gr.Row():
             with gr.Column():
-                audio_source = gr.Dropdown(
-                    label="Audio Source",
-                    choices=["microphone", "upload"],
-                    value="microphone",
+                audio_input = gr.Audio(
+                    label="Audio Input", sources=["upload", "microphone"]
                 )
-                audio_input = gr.Audio(label="Audio Input", sources="microphone")
 
             with gr.Column():
                 audio_output = gr.Text(label="Audio Output", lines=4, interactive=True)
@@ -38,10 +35,6 @@ def create_speech_tab(tab_id=""):
                 label="Whisper Prompt Examples",
             )
 
-        def update_audio_input_source(audio_source):
-            assert audio_source in ["microphone", "upload"]
-            return gr.Audio(source=audio_source)
-
         def submit_audio(audio, whisper_prompt):
             sr, data = audio
             transcript = transcribe_audio_data(sr, data, whisper_prompt)
@@ -49,10 +42,6 @@ def create_speech_tab(tab_id=""):
 
         def clear_audio():
             return None
-
-        audio_source.change(
-            update_audio_input_source, inputs=[audio_source], outputs=[audio_input]
-        )
 
         submit_btn.click(
             submit_audio, inputs=[audio_input, whisper_prompt], outputs=[audio_output]
