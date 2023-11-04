@@ -11,7 +11,7 @@ def create_speech_tab(tab_id=""):
                     choices=["microphone", "upload"],
                     value="microphone",
                 )
-                audio_input = gr.Audio(label="Audio Input", source="microphone")
+                audio_input = gr.Audio(label="Audio Input", sources="microphone")
 
             with gr.Column():
                 audio_output = gr.Text(label="Audio Output", lines=4, interactive=True)

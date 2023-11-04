@@ -52,8 +52,8 @@ def main(bot_name, num_chat_tabs, auth_username, auth_password, share):
         title=f"Chat with {bot_name} (HJY AI bot)",
         theme=gr.themes.Soft(),
     )
-    demo.queue(concurrency_count=4).launch(
-        share=share, auth=[(auth_username, auth_password)]
+    demo.queue().launch(
+        share=share, max_threads=10, auth=[(auth_username, auth_password)]
     )
 
 
