@@ -7,8 +7,10 @@ def create_speech_tab(tab_id=""):
         with gr.Row():
             with gr.Column():
                 audio_input = gr.Audio(
-                    label="Audio Input", sources=["upload", "microphone"]
-                )
+                    label="Audio Input",
+                    sources=["upload", "microphone"],
+                    show_label=False,
+                )  # TODO: fix the box styling, issue: https://github.com/gradio-app/gradio/pull/6279
 
             with gr.Column():
                 audio_output = gr.Text(label="Audio Output", lines=4, interactive=True)
