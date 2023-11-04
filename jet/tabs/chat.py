@@ -115,10 +115,7 @@ def create_chat_tab(tab_id=""):
                     {"left": "$", "right": "$", "display": False},
                 ],
                 elem_id=tab_id + "chat-chatbot",
-            ),
-            mode="manual",
-            # workaround for https://github.com/gradio-app/gradio/issues/5800
-            # TODO: use `mode="change"` after the issue is fixed
+            )
         )
         msg = persist(
             gr.Textbox(
@@ -250,8 +247,6 @@ def create_chat_tab(tab_id=""):
             bot,
             inputs=[chatbot, system_message, model_name, temperature, max_tokens],
             outputs=[chatbot],
-        ).then(
-            **chatbot.save_session_kwargs
         )
 
         retry_btn.click(
@@ -260,9 +255,7 @@ def create_chat_tab(tab_id=""):
             [chatbot],
         )
         undo_btn.click(undo, [chatbot], [chatbot, msg])
-        clear_btn.click(clear, [], [chatbot, msg, system_message]).then(
-            **chatbot.save_session_kwargs
-        )
+        clear_btn.click(clear, [], [chatbot, msg, system_message])
 
         chatbot.select(
             load_message_to_edit_area,
